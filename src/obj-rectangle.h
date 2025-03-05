@@ -8,4 +8,6 @@ typedef struct tagObjRectangle {
     Pos end;
 } ObjRectangle;
 
+ObjRectangle setDefaultObjRectangle(void);
+
 #endif
