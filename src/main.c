@@ -39,8 +39,9 @@ int main(int argc, char *argv[]) {
  // ファイルの内容を取得
     pf = fopen(pffr.path, "r");
     if(pf) {
+        getFileContent(&pffr);
     } else {
-        createDefaultFile(pffr);
+        createDefaultFile(&pffr);
     }
     fclose(pf);
 
