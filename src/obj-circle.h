@@ -8,4 +8,6 @@ typedef struct tagObjCircle {
     float radius;
 } ObjCircle;
 
+ObjCircle setDefaultObjCircle(void);
+
 #endif
