@@ -9,4 +9,6 @@ typedef struct tagProcPage {
     Pos size;
 } ProcPage;
 
+ProcPage setDefaultProcPage(void);
+
 #endif
