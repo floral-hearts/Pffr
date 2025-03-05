@@ -5,4 +5,6 @@ typedef struct tagPffr {
     char path[255];
 } Pffr;
 
+void createDefaultFile(Pffr pffr);
+
 #endif
