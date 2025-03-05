@@ -17,4 +17,6 @@ void createDefaultFile(Pffr pffr) {
     fputs("pgs 210 297\n", pf);
     fputs("obj 0\n", pf);
     fclose(pf);
+    pffr.info = setDefaultProcInfo();
+    return;
 }
