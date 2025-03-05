@@ -8,6 +8,7 @@ typedef struct tagPffr {
     char path[255];
     ProcInfo info;
     ProcPage *page;
+    int pageSize;
 } Pffr;
 
 void createDefaultFile(Pffr pffr);
