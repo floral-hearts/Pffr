@@ -21,5 +21,6 @@ void createDefaultFile(Pffr pffr) {
     pffr.info = setDefaultProcInfo();
     pffr.page = (ProcPage *)malloc(sizeof(ProcPage) * 1);
     pffr.page[0] = setDefaultProcPage();
+    pffr.pageSize = 1;
     return;
 }
