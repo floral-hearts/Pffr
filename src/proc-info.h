@@ -6,4 +6,6 @@ typedef struct tagProcInfo {
     char author[255];
 } ProcInfo;
 
+ProcInfo setDefaultProcInfo(void);
+
 #endif
