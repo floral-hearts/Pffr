@@ -1,6 +1,7 @@
 #include "pffr.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 void createDefaultFile(Pffr pffr) {
     FILE *pf = fopen(pffr.path, "w");
@@ -18,5 +19,7 @@ void createDefaultFile(Pffr pffr) {
     fputs("obj 0\n", pf);
     fclose(pf);
     pffr.info = setDefaultProcInfo();
+    pffr.page = (ProcPage *)malloc(sizeof(ProcPage) * 1);
+    pffr.page[0] = setDefaultProcPage();
     return;
 }
