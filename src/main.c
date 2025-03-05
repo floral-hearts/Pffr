@@ -35,6 +35,8 @@ int main(int argc, char *argv[]) {
         fputs("error: 不要な引数があります\n", stderr);
         exit(1);
     }
+
+ // ファイルの内容を取得
     pf = fopen(pffr.path, "r");
     if(pf) {
     } else {
@@ -42,5 +44,6 @@ int main(int argc, char *argv[]) {
     }
     fclose(pf);
 
+    free(pffr.page);
     return 0;
 }
