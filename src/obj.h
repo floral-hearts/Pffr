@@ -1,4 +1,12 @@
 #ifndef OBJ_H
 #define OBJ_H
 
+#include "obj-circle.h"
+#include "obj-rectangle.h"
+
+typedef union tagObjContent {
+    ObjCircle circle;
+    ObjRectangle rectangle;
+} ObjContent;
+
 #endif
