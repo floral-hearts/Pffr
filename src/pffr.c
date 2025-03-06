@@ -24,3 +24,29 @@ void createDefaultFile(Pffr *pffr) {
     pffr->pageSize = 1;
     return;
 }
+
+void getFileContent(Pffr *pffr) {
+    FILE *pf = fopen(pffr->path, "r");
+    char token[255][10];
+    int tokenSize = 0;
+    int charSize = 0;
+    char c;
+
+ // ナンバーコード
+    for(int i = 0; i < 3; i ++) {
+        c = fgetc(pf);
+        if(c == EOF) {
+            fputs("error: ナンバーコードが一致しません\n", stderr);
+            exit(1);
+        } else if(c == '\n') {
+            if(i == 2)
+                break;
+            else {
+                fputs("error: ナンバーコードが一致しません\n", stderr);
+                exit(1);
+            }
+        } else {
+        }
+    }
+    fclose(pf);
+}
