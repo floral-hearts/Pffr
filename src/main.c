@@ -46,5 +46,5 @@ int main(int argc, char *argv[]) {
     fclose(pf);
 
     free(pffr.page);
-    return 0;
+    exit(0);
 }
