@@ -28,25 +28,17 @@ void createDefaultFile(Pffr *pffr) {
 void getFileContent(Pffr *pffr) {
     FILE *pf = fopen(pffr->path, "r");
     char token[255][10];
-    int tokenSize = 0;
+    int tokenSize = -1;
     int charSize = 0;
     char c;
 
- // ナンバーコード
-    for(int i = 0; i < 3; i ++) {
+ // マジックナンバー
+    char magicNumber[13] = "doc Pffr 1\n\n\n";
+    for(int i = 0; i < 13; i ++) {
         c = fgetc(pf);
-        if(c == EOF) {
+        if(c != magicNumber[i]) {
             fputs("error: ナンバーコードが一致しません\n", stderr);
             exit(1);
-        } else if(c == '\n') {
-            if(i == 2)
-                break;
-            else {
-                fputs("error: ナンバーコードが一致しません\n", stderr);
-                exit(1);
-            }
-        } else {
         }
     }
-    fclose(pf);
 }
