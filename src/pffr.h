@@ -12,6 +12,6 @@ typedef struct tagPffr {
 } Pffr;
 
 void createDefaultFile(Pffr *pffr);
-void getFileContent(Pffr *pffr)
+void getFileContent(Pffr *pffr);
 
 #endif
