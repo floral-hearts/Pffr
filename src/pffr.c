@@ -108,7 +108,7 @@ void getFileContent(Pffr *pffr) {
 
  // インフォメーションプロセス
     pffr.info = setDefaultProcInfo();
-    if(acsInfo == -1) {
+    if(acsInfo != -1) {
         if(fseek(pf, acsInfo, SEEK_SET) != 0) {
             fputs("error: acs proc: infプロセスのアクセス先が存在しません\n", stderr);
             exit(1);
@@ -162,6 +162,46 @@ void getFileContent(Pffr *pffr) {
             pffr.info.author[i] = '\0';
         }
     }
+
+ // ページプロセス
+    if(acsPage == -1) {
+        fputs("error: acs proc: ページプロセスが指定されていません\n", stderr);
+        exit(1);
+    } else if(fseek(pf, acsPage, SEEK_SET) != 0) {
+        fputs("error: acs proc: 指定されたページプロセスは存在しません\n", stderr);
+        exit(1);
+    }
+    for(int i = 0; i < 3; i ++) {
+        c = fgetc();
+        if(c == EOF) {
+            fputs("error: page proc: 演算子が壊れています\n", stderr);
+            exit(1);
+        }
+        ope[i] = c;
+    }
+    if(strcmp(ope, "tnp") != 0 || fgetc() != ' ') {
+        fputs("error: page proc: 演算子が間違っています\n", stderr);
+        exit(1);
+    }
+    char tnpStr[255];
+    for(int i = 0; i < 254; i ++) {
+        c = fgetc();
+        if(c == EOF) {
+            fputs("error: page proc: tnp被演算子が間違っています\n", stderr);
+            exit(1);
+        } else if(c == '\n') {
+            tnpStr[i] = '\0';
+            break;
+        } else {
+            tnpStr[i] = (char)c;
+        }
+    }
+    pffr->pageSize = atoi(tnpStr);
+    if(pffr->pageSize < 1) {
+        fputs("error: page proc: tnp被演算子が数字ではありません\n", stderr);
+        exit(1);
+    }
+    pffr->page = (ProcPage *)malloc(sizeof(ProcPage) * pffr->pageSize);
 
     fclose(pf);
     return;
