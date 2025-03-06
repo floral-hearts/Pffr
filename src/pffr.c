@@ -52,12 +52,14 @@ void getFileContent(Pffr *pffr) {
             c = fgetc(pf);
             if(i == 1 && next && c == '\n') {
                 break;
-            } else if(c != '\n') {
+            } else if(i == 0 && c == '\n') {
                 next = 1;
-            }
-            if(c != acsToken[4]) {
-                fputs("error: アクセスプロセスが破損しています\n", stderr);
+            } else if(c != acsToken[i]) {
+                next = 0;
+                fputs("error: acs proc: acs演算子\n", stderr);
                 exit(1);
+            } else {
+                next = 0;
             }
         }
         if(next) {
@@ -66,7 +68,7 @@ void getFileContent(Pffr *pffr) {
         for(int i = 0;  i < 3; i ++) {
             c = fgetc(pf);
             if(c == EOF) {
-                fputs("error: アクセスプロセスが破損しています\n", stderr);
+                fputs("error: acs proc: acs第1被演算子がありません\n", stderr);
                 exit(1);
             }
             token[i] = c;
@@ -77,33 +79,27 @@ void getFileContent(Pffr *pffr) {
             exit(1);
         }
         if(!(strcmp(token, "inf") == 0 || strcmp(token, "pag") == 0)) {
-            fputs("error: アクセスプロセスが破損しています\n", stderr);
+            fputs("error: acs proc: acs第1被演算子\n", stderr);
             exit(1);
         }
         char acsStr[255] = { 0 };
         long acs;
         for(int i = 0; i < 255; i ++) {
             c = fgetc(pf);
-            if('0' <= c || c <= '9') {
+            if('0' <= c && c <= '9') {
                 acsStr[i] = (char)c;
-            } if(c == '\n') {
+            } else if(c == '\n') {
                 break;
             } else {
-                fputs("error: アクセスプロセスが破損しています\n", stderr);
+                fputs("error: acs proc: acs第2被演算子\n", stderr);
                 exit(1);
             }
         }
-        for(int i = 0; i < strlen(acsStr); i --) {
-            long digit = 1;
-            for(int j = 0; j < i; j ++) {
-                digit *= 10;
-            }
-            acs += (digit * (acsStr[i] - '0'));
-        }
+        acs = atol(acsStr);
         long *acsProc;
         acsProc = strcmp(token, "inf") == 0 ? &acsInfo : &acsPage;
-        if(*acsProc == -1) {
-            fputs("error: アクセスプロセスが破損しています\n", stderr);
+        if(*acsProc != -1) {
+            fputs("error: acs proc: アクセス項目が重複しています\n", stderr);
             exit(1);
         } else {
             *acsProc = acs;
@@ -111,4 +107,5 @@ void getFileContent(Pffr *pffr) {
     }
 
     fclose(pf);
+    return;
 }
