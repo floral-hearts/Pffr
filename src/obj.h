@@ -16,7 +16,7 @@ typedef enum tagObjType {
 } ObjType;
 
 typedef struct tagObj {
-    char name[255]
+    char name[255];
     Color color;
     ObjType type;
     ObjContent content;
