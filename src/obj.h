@@ -22,4 +22,6 @@ typedef struct tagObj {
     ObjContent content;
 } Obj;
 
+Color setDefaultObjColor(void);
+
 #endif
