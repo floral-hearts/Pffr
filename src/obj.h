@@ -9,4 +9,9 @@ typedef union tagObjContent {
     ObjRectangle rectangle;
 } ObjContent;
 
+typedef enum tagObjType {
+    OBJ_TYPE_CIRCLE,
+    OBJ_TYPE_RECTANGLE,
+} ObjType;
+
 #endif
