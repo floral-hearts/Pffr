@@ -28,7 +28,7 @@ void createDefaultFile(Pffr *pffr) {
 
 void getFileContent(Pffr *pffr) {
     FILE *pf = fopen(pffr->path, "r");
-    char token[255];
+    char ope[4];
     int c;
     long byte;
     long acsInfo = -1;
@@ -103,6 +103,63 @@ void getFileContent(Pffr *pffr) {
             exit(1);
         } else {
             *acsProc = acs;
+        }
+    }
+
+ // インフォメーションプロセス
+    pffr.info = setDefaultProcInfo();
+    if(acsInfo == -1) {
+        if(fseek(pf, acsInfo, SEEK_SET) != 0) {
+            fputs("error: acs proc: infプロセスのアクセス先が存在しません\n", stderr);
+            exit(1);
+        }
+        for(int i = 0; i < 3; i ++) {
+            c = fgetc();
+            if(c == EOF) {
+                fputs("error: inf proc: 演算子が壊れています\n", stderr);
+                exit(1);
+            }
+            ope[i] = c;
+        }
+        if(fgetc() != ' ') {
+            fputs("error: inf proc: 演算子が壊れています\n", stderr);
+            exit(1);
+        }
+        ope[3] = '\0';
+        if(strcmp(ope, "ttl") == 0) {
+            int i = 0;
+            while((c = fgetc()) == '\n') {
+                if(c == EOF) {
+                    fputs("error: inf proc: 被演算子が途中で終わっています\n", stderr);
+                    exit(1);
+                }
+                pffr.info.title[i] = c;
+                i ++;
+            }
+            pffr.info.title[i] = '\0';
+        }
+        if(strcmp(ope, "ttl") == 0) {
+            int i = 0;
+            while((c = fgetc()) == '\n') {
+                if(c == EOF) {
+                    fputs("error: inf proc: 被演算子が途中で終わっています\n", stderr);
+                    exit(1);
+                }
+                pffr.info.title[i] = c;
+                i ++;
+            }
+            pffr.info.title[i] = '\0';
+        } else if(strcmp(ope, "ath") == 0) {
+            int i = 0;
+            while((c = fgetc()) == '\n') {
+                if(c == EOF) {
+                    fputs("error: inf proc: 被演算子が途中で終わっています\n", stderr);
+                    exit(1);
+                }
+                pffr.info.author[i] = c;
+                i ++;
+            }
+            pffr.info.author[i] = '\0';
         }
     }
 
