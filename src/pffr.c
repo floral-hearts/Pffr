@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 void createDefaultFile(Pffr *pffr) {
     FILE *pf = fopen(pffr->path, "w");
@@ -27,10 +28,10 @@ void createDefaultFile(Pffr *pffr) {
 
 void getFileContent(Pffr *pffr) {
     FILE *pf = fopen(pffr->path, "r");
-    char token[255][10];
-    int tokenSize = -1;
-    int charSize = 0;
+    char token[255];
     char c;
+    long puta;
+    long b;
 
  // マジックナンバー
     char magicNumber[13] = "doc Pffr 1\n\n\n";
@@ -41,4 +42,24 @@ void getFileContent(Pffr *pffr) {
             exit(1);
         }
     }
+
+ // アクセスプロセス
+    char acsToken[4] = "acs ";
+    for(int i = 0; i < 4; i ++) {
+        c = fgetc(pf);
+        if(c != acsToken[4]) {
+            fputs("error: アクセスプロセスが破損しています\n", stderr);
+            exit(1);
+        }
+    }
+    for(int i = 0;  i < 3; i ++) {
+        c = fgetc(pf);
+        if(c == EOF) {
+            fputs("error: アクセスプロセスが破損しています\n", stderr);
+            exit(1);
+        }
+        token[i] = c;
+    }
+
+    fclose(pf);
 }
