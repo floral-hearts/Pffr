@@ -7,5 +7,7 @@ ProcPage setDefaultProcPage(void) {
     ret.color.blue = 0x00;
     ret.pos.x = 297f;
     ret.pos.y = 210f;
+    ret.obj = NULL;
+    ret.objSize = 0;
     return ret;
 }
