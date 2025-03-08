@@ -208,3 +208,38 @@ void getFileContent(Pffr *pffr) {
     fclose(pf);
     return;
 }
+
+void fgetToken(FILE *f, char *str, int strSize) {
+    int c;
+    int i;
+
+    c = fgetc(f);
+    if(c == EOF) {
+        goto error;
+    } else if(isSpace(c)) {
+        while(!isSpace(c)) {
+            c = fgetc(f);
+            if(c == EOF) {
+                goto error;
+            }
+        }
+    }
+    str[0] = c;
+    for(i = 1; i < strSize - 1; i ++) {
+        c = fgetc();
+        if(c == EOF) {
+            goto error;
+        } else if(isSpace(c)) {
+            str[i] = '\0';
+            break;
+        } else if(isNext(c)) {
+            str[i] = '\0';
+            break;
+        }
+        str[i] = c;
+    }
+
+error:
+    fputs("error: no take token\n", stderr);
+    exit(1);
+}
