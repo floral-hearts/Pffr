@@ -6,6 +6,7 @@
 #include "pos.h"
 
 typedef struct tagProcPage {
+    long acs;
     Color background;
     Pos size;
     Obj *obj;
