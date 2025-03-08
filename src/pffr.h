@@ -6,6 +6,7 @@
 
 typedef struct tagPffr {
     char path[255];
+    int version;
     ProcInfo info;
     ProcPage *page;
     int pageSize;
