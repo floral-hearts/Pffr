@@ -30,13 +30,32 @@ void createDefaultFile(Pffr *pffr) {
 void getFileContent(Pffr *pffr) {
     FILE *pf = fopen(pffr->path, "r");
     char ope[4];
+    char str255[255];
     int c;
     long byte;
     long acsInfo = -1;
     long acsPage = -1;
 
  // マジックナンバー
-    for(int i = 0)
+    ope[0] = '\0';
+    fgetToken(pf, ope, 4);
+    if(strcmp(ope, "doc") != 0) {
+        fputs("error: break operator\n", stderr);
+        exit(1);
+    }
+    fgetToken(pf, str255, 255);
+    if(strcmp(ope, "Pffr") != 0) {
+        fputs("error: break 1st doc operand\n", stderr);
+        exit(1);
+    }
+    fgetToken(pf, str255, 255);
+    if((pffr.version = atoi(str255)) != 1) {
+        fputs("error: cannnot open file\n", pf);
+        exit(1);
+    }
+    while(strcmp(str255, "\n\n\n") == 0) {
+        fgetToken(pf, str255, 255);
+    }
 
  // アクセスプロセス
     while(1) {
