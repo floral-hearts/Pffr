@@ -232,9 +232,6 @@ void fgetToken(FILE *f, char *str, int strSize) {
         } else if(isSpace(c)) {
             str[i] = '\0';
             break;
-        } else if(isNext(c)) {
-            str[i] = '\0';
-            break;
         }
         str[i] = c;
     }
