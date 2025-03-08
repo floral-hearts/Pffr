@@ -36,15 +36,7 @@ void getFileContent(Pffr *pffr) {
     long acsPage = -1;
 
  // マジックナンバー
-    char magicNumber[13] = "doc Pffr 1\n\n\n";
-    for(int i = 0; i < 13; i ++) {
-        c = fgetc(pf);
-        if(c != magicNumber[i]) {
-            fputs("error: ナンバーコードが一致しません\n", stderr);
-            exit(1);
-        }
-    }
-    pffr->version = 1;
+    for(int i = 0)
 
  // アクセスプロセス
     while(1) {
@@ -212,6 +204,7 @@ void getFileContent(Pffr *pffr) {
 void fgetToken(FILE *f, char *str, int strSize) {
     int c;
     int i;
+    int eot = 0;
 
     c = fgetc(f);
     if(c == EOF) {
@@ -231,9 +224,13 @@ void fgetToken(FILE *f, char *str, int strSize) {
             goto error;
         } else if(isSpace(c)) {
             str[i] = '\0';
+            eot = 1;
             break;
         }
         str[i] = c;
+    }
+    if(!eot) {
+        goto error;
     }
 
 error:
