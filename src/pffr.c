@@ -80,13 +80,17 @@ void access(Pffr *pffr, FILE pf) {
             break;
         }
         fgetToken(pf, key, 4);
+        if(strcmp(key, "prc") != 0) {
+            fputs("error: break 1st acs operand\n", stderr);
+        }
+        fgetToken(pf, key, 4);
         fgetToken(pf, str255, 255);
         if(strcmp(key, "inf") == 0) {
             pffr.acsInfo = atol(str255);
         } else if(strcmp(key, "pag") == 0) {
             pffr.acsPage = atol(str255);
         } else {
-            fputs("error: break 1st acs operand\n", stderr);
+            fputs("error: break 2nd acs operand\n", stderr);
         }
     }
 }
@@ -118,7 +122,9 @@ void information(Pffr *pffr, FILE *pf) {
 
 void page(Pffr *pffr, FILE *pf) {
     char ope[4];
+    char key[4];
     char str255[255];
+    int num;
 
     if(acsPage == -1 || fseek(pf, acsPage, SEEK_SET) != 0) {
         fputs("error: no find page process\n", stderr);
@@ -136,6 +142,33 @@ void page(Pffr *pffr, FILE *pf) {
         exit(1);
     }
     pffr->page = (ProcPage *)malloc(sizeof(ProcPage) * pffr->pageSize);
+    for(int i = 0; i < pffr->pageSize; i ++) {
+        pffr->page[i].objSize = 0;
+    }
+
+    while(1) {
+        fgetToken(pf, ope, 4);
+        if(strcmp(ope, "acs") != 0) {
+            fputs("error: break operator\n", stderr);
+            free(pffr->page);
+            exit(1);
+        }
+        fgetToken(pf, key, 4);
+        if(strcmp(key, "pag") != 0) {
+            fputs("error: break 1st acs operand\n", stderr);
+            free(pffr->page);
+            exit(1);
+        }
+        fgetToken(pf, str255, 255);
+        num = atoi(str255);
+        if(!(0 <= num && num < pffr->pageSize)) {
+            fputs("error: break 2st acs operand\n", stderr);
+            free(pffr->page);
+            exit(1);
+        }
+        fgetToken(pf, str255, 255);
+        pffr->page[num].acs = atol(str255);
+    }
 }
 
 void fgetToken(FILE *f, char *str, int strSize) {
