@@ -36,6 +36,13 @@ void getFileContent(Pffr *pffr) {
     long acsInfo = -1;
     long acsPage = -1;
 
+    magic(pffr, pf);
+    access(pffr, pf);
+    information(pffr, pf);
+    page(pffr, pf);
+}
+
+void magic(Pffr *pffr, FILE pf) {
  // マジックナンバー
     ope[0] = '\0';
     fgetToken(pf, ope, 4);
@@ -56,7 +63,9 @@ void getFileContent(Pffr *pffr) {
     while(strcmp(str255, "\n\n\n") == 0) {
         fgetToken(pf, str255, 255);
     }
+}
 
+void access(Pffr *pffr, FILE pf) {
  // アクセスプロセス
     while(1) {
         char acsToken[4] = "acs ";
@@ -118,7 +127,9 @@ void getFileContent(Pffr *pffr) {
             *acsProc = acs;
         }
     }
+}
 
+void information(Pffr *pffr, FILE *pf) {
  // インフォメーションプロセス
     pffr.info = setDefaultProcInfo();
     if(acsInfo != -1) {
@@ -175,7 +186,9 @@ void getFileContent(Pffr *pffr) {
             pffr.info.author[i] = '\0';
         }
     }
+}
 
+void page(Pffr *pffr, FILE *pf) {
  // ページプロセス
     if(acsPage == -1) {
         fputs("error: acs proc: ページプロセスが指定されていません\n", stderr);
