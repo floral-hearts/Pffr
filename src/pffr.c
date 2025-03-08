@@ -19,6 +19,7 @@ void createDefaultFile(Pffr *pffr) {
     fputs("pgs 210 297\n", pf);
     fputs("obj 0\n", pf);
     fclose(pf);
+    pffr->version = 1;
     pffr->info = setDefaultProcInfo();
     pffr->page = (ProcPage *)malloc(sizeof(ProcPage) * 1);
     pffr->page[0] = setDefaultProcPage();
@@ -43,8 +44,9 @@ void getFileContent(Pffr *pffr) {
             exit(1);
         }
     }
+    pffr->version = 1;
 
- // アクセスプロセ
+ // アクセスプロセス
     while(1) {
         char acsToken[4] = "acs ";
         int next = 1;
