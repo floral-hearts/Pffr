@@ -10,6 +10,8 @@
 typedef struct tagPffr {
     char path[255];
     int version;
+    long acsInfo;
+    long acsPage;
     ProcInfo info;
     ProcPage *page;
     int pageSize;
@@ -17,6 +19,10 @@ typedef struct tagPffr {
 
 void createDefaultFile(Pffr *pffr);
 void getFileContent(Pffr *pffr);
+void magic(Pffr pffr, FILE *pf);
+void access(Pffr pffr, FILE *pf);
+void information(Pffr pffr, FILE *pf);
+void page(Pffr pffr, FILE *pf);
 void fgetToken(FILE *f, char *str, int strSize);
 
 #endif
