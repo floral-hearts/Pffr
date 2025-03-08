@@ -31,6 +31,7 @@ void getFileContent(Pffr *pffr) {
     FILE *pf = fopen(pffr->path, "r");
     pffr.acsInfo = -1;
     pffr.acsPage = -1;
+    pffr.pageSize = 0;
     magic(pffr, pf);
     access(pffr, pf);
     information(pffr, pf);
@@ -45,23 +46,19 @@ void magic(Pffr *pffr, FILE *pf) {
     ope[0] = '\0';
     fgetToken(pf, ope, 4);
     if(strcmp(ope, "doc") != 0) {
-        fputs("error: break operator\n", stderr);
-        exit(1);
+        error(pffr, "error: break operator\n");
     }
     fgetToken(pf, str255, 255);
     if(strcmp(ope, "Pffr") != 0) {
-        fputs("error: break 1st doc operand\n", stderr);
-        exit(1);
+        error(pffr, "error: break 1st doc operand\n");
     }
     fgetToken(pf, str255, 255);
     if((pffr.version = atoi(str255)) != 1) {
-        fputs("error: cannnot open file\n", stderr);
-        exit(1);
+        error(pffr, "error: cannnot open file\n");
     }
     fgetToken(pf, str255, 255);
     if(strcmp(str255, "\n\n\n") != 0) {
-        fputs("error: no find next process\n", stderr);
-        exit(1);
+        error(pffr, "error: no find next process\n");
     }
 }
 
@@ -74,14 +71,13 @@ void access(Pffr *pffr, FILE pf) {
     while(1) {
         fgetToken(pf, ope, 4);
         if(strcmp(ope, "acs") != 0) {
-            fputs("error: break operator\n", stderr);
-            exit(1);
+            error(pffr, "error: break operator\n");
         } else if(strcmp(ope, "\n\n\n") != 0) {
             break;
         }
         fgetToken(pf, key, 4);
         if(strcmp(key, "prc") != 0) {
-            fputs("error: break 1st acs operand\n", stderr);
+            error(pffr, "error: break 1st acs operand\n");
         }
         fgetToken(pf, key, 4);
         fgetToken(pf, str255, 255);
@@ -90,7 +86,7 @@ void access(Pffr *pffr, FILE pf) {
         } else if(strcmp(key, "pag") == 0) {
             pffr.acsPage = atol(str255);
         } else {
-            fputs("error: break 2nd acs operand\n", stderr);
+            error(pffr, "error: break 2nd acs operand\n");
         }
     }
 }
@@ -102,8 +98,7 @@ void information(Pffr *pffr, FILE *pf) {
     pffr.info = setDefaultProcInfo();
     while(pffr.acsInfo != -1) {
         if(fseek(pf, pffr.acsInfo, SEEK_SET) != 0) {
-            fputs("error: no find information process\n", stderr);
-            exit(1);
+            error(pffr, "error: no find information process\n");
         }
         fgetToken(pf, ope, 4);
         if(strcmp(ope, "ttl") == 0) {
@@ -115,7 +110,7 @@ void information(Pffr *pffr, FILE *pf) {
         } else if(strcmp(ope, "\n\n\n") == 0) {
             break;
         } else {
-            fputs("error: break operator\n", stderr);
+            error(pffr, "error: break operator\n");
         }
     }
 }
@@ -127,19 +122,16 @@ void page(Pffr *pffr, FILE *pf) {
     int num;
 
     if(acsPage == -1 || fseek(pf, acsPage, SEEK_SET) != 0) {
-        fputs("error: no find page process\n", stderr);
-        exit(1);
+        error(pffr, "error: no find page process\n");
     }
     fgetToken(pf, ope, 4);
     if(strcmp(ope, "tpg") != 0) {
-        fputs("error: break operator\n", stderr);
-        exit(1);
+        error(pffr, "error: break operator\n");
     }
     fgetToken(pf, str255, 255);
     pffr->pageSize = atoi(str255);
     if(pffr->pageSize < 1) {
-        fputs("error: break 1st tnp operand\n", stderr);
-        exit(1);
+        error(pffr, "error: break 1st tnp operand\n");
     }
     pffr->page = (ProcPage *)malloc(sizeof(ProcPage) * pffr->pageSize);
     for(int i = 0; i < pffr->pageSize; i ++) {
@@ -149,22 +141,16 @@ void page(Pffr *pffr, FILE *pf) {
     while(1) {
         fgetToken(pf, ope, 4);
         if(strcmp(ope, "acs") != 0) {
-            fputs("error: break operator\n", stderr);
-            free(pffr->page);
-            exit(1);
+            error(pffr, "error: break operator\n");
         }
         fgetToken(pf, key, 4);
         if(strcmp(key, "pag") != 0) {
-            fputs("error: break 1st acs operand\n", stderr);
-            free(pffr->page);
-            exit(1);
+            error(pffr, "error: break 1st acs operand\n");
         }
         fgetToken(pf, str255, 255);
         num = atoi(str255);
         if(!(0 <= num && num < pffr->pageSize)) {
-            fputs("error: break 2st acs operand\n", stderr);
-            free(pffr->page);
-            exit(1);
+            error(pffr, "error: break 2st acs operand\n");
         }
         fgetToken(pf, str255, 255);
         pffr->page[num].acs = atol(str255);
@@ -204,6 +190,16 @@ void fgetToken(FILE *f, char *str, int strSize) {
     }
 
 error:
-    fputs("error: no take token\n", stderr);
+    error(pffr, "error: no take token\n");
+}
+
+void error(Pffr *pffr, char *msg) {
+    fputs(msg, stderr);
+    for(int i = 0; i < pffr->pageSize; i ++) {
+        for(int j = 0; j < pffr->page[i].objSize; j ++) {
+            free(pffr->page[i].obj);
+        }
+        free(pffr->page);
+    }
     exit(1);
 }
