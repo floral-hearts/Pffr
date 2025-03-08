@@ -4,8 +4,8 @@
 #include "proc-info.h"
 #include "proc-page.h"
 
-#define isSpace(c) (c == ' ' || c == '\t' || c == '\v')
-#define isNext(c) (c == '\n' || c == '\r')
+#define isSpace(c) ((c) == ' ' || (c) == '\t' || (c) == '\v')
+#define isNext(c) ((c) == '\n' || (c) == '\r')
 
 typedef struct tagPffr {
     char path[255];
