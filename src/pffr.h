@@ -17,5 +17,6 @@ typedef struct tagPffr {
 
 void createDefaultFile(Pffr *pffr);
 void getFileContent(Pffr *pffr);
+void fgetToken(FILE *f, char *str, int strSize);
 
 #endif
