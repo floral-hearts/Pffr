@@ -229,19 +229,19 @@ void kid(Pffr *pffr, FILE *pf) {
     }
 }
 
-void fgetToken(FILE *f, char *str, int strSize) {
+void fgetToken(Pffr *pffr, FILE *f, char *str, int strSize) {
     int c;
     int i;
     int eot = 0;
 
     c = fgetc(f);
     if(c == EOF) {
-        goto error;
+        error(pffr, "error: no get token\n");
     } else if(isSpace(c)) {
         while(!isSpace(c)) {
             c = fgetc(f);
             if(c == EOF) {
-                goto error;
+                error(pffr, "error: no get token\n");
             }
         }
     }
@@ -249,7 +249,7 @@ void fgetToken(FILE *f, char *str, int strSize) {
     for(i = 1; i < strSize - 1; i ++) {
         c = fgetc();
         if(c == EOF) {
-            goto error;
+            error(pffr, "error: no get token\n");
         } else if(isSpace(c)) {
             str[i] = '\0';
             eot = 1;
@@ -258,11 +258,8 @@ void fgetToken(FILE *f, char *str, int strSize) {
         str[i] = c;
     }
     if(!eot) {
-        goto error;
+        error(pffr, "error: no get token\n");
     }
-
-error:
-    error(pffr, "error: no take token\n");
 }
 
 void error(Pffr *pffr, char *msg) {
