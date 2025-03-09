@@ -24,7 +24,7 @@ void access(Pffr *pffr, FILE *pf);
 void information(Pffr *pffr, FILE *pf);
 void page(Pffr *pffr, FILE *pf);
 void kid(Pffr *pffr, FILE *pf);
-void fgetToken(FILE *f, char *str, int strSize);
+void fgetToken(Pffr *pffr, FILE *f, char *str, int strSize);
 void error(Pffr *pffr, char *msg);
 
 #endif
