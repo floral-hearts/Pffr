@@ -17,6 +17,7 @@ typedef struct tagPffr {
     int pageSize;
 } Pffr;
 
+void writeContent(Pffr *pffr);
 void createDefaultFile(Pffr *pffr);
 void getFileContent(Pffr *pffr);
 void magic(Pffr *pffr, FILE *pf);
