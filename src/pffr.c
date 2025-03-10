@@ -4,6 +4,30 @@
 #include <stdlib.h>
 #include <string.h>
 
+void writeContent(Pffr *pffr) {
+    printf("path: %s\n", pffr->path);
+    printf("version: %d\n", pffr->version);
+    printf("acsInfo: %ld\n", pffr->acsInfo);
+    printf("info:\n");
+    printf(" * title: %s\n", pffr->info.title);
+    printf(" * author: %s\n", pffr->info.author);
+    printf("acsPage: %ld\n", pffr->acsPage);
+    printf("page:\n");
+    for(int i = 0; i < pffr->pageSize; i ++) {
+        printf(" * [%d]", i);
+        printf("    - acs: %ld\n", pffr->page[i].acs);
+        printf("    - background: (%d, %d, %d)\n", pffr->page[i].background.red, pffr->page[i].background.green, pffr->page[i].background.blue);
+        printf("    - size: (%d, %d)\n", pffr->page[i].size.x, pffr->page[i].size.y);
+        printf("    - objSize: %d\n", pffr->page[i].objSize);
+        printf("    - obj:\n")
+        for(int j = 0; j < pffr->page[i].objSize; j ++) {
+            printf("       ~ name: %s\n", pffr->page[i].obj[j].name);
+            printf("       ~ color: (%d, %d, %d)\n", pffr->page[i].obj[j].color.red, pffr->page[i].obj[j].color.green, pffr->page[i].obj[j].color.blue);
+            printf("       ~ type: %d\n", pffr->page[i].obj[j].type);
+        }
+    }
+}
+
 void createDefaultFile(Pffr *pffr) {
     FILE *pf = fopen(pffr->path, "w");
     fputs("doc Pffr 1\n", pf);
