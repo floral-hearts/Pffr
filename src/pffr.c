@@ -170,8 +170,8 @@ void kid(Pffr *pffr, FILE *pf) {
 
     for(int i = 0; i < pffr.pageSize; i ++) {
         nextPage = setedClr = setedSiz = setedTob = 0;
-        fseek(pf, pffr.page[i].acs, SEEK_SET);
-        pffr.page[i] = setDefaultProcPage();
+        fseek(pf, pffr->page[i].acs, SEEK_SET);
+        pffr->page[i] = setDefaultProcPage();
         while(1) {
             fgetToken(pffr, pf, ope, 4);
             if(strcmp(ope, "clr") == 0) {
@@ -181,12 +181,11 @@ void kid(Pffr *pffr, FILE *pf) {
                     setedClr = 1;
                 }
                 fgetToken(pffr, pf, str255, 255);
-                pffr.page[i].background.red = atoi(str255);
+                pffr->page[i].background.red = atoi(str255);
                 fgetToken(pffr, pf, str255, 255);
-                pffr.page[i].background.green = atoi(str255);
+                pffr->page[i].background.green = atoi(str255);
                 fgetToken(pffr, pf, str255, 255);
-                pffr.page[i].background.blue = atoi(str255);
-                fgetToken(pffr, pf, key, 255);
+                pffr->page[i].background.blue = atoi(str255);
             } else if(strcmp(ope, "siz") == 0) {
                 if(setedSiz) {
                     error(pffr, "error: clr operator is duplicated\n");
@@ -194,9 +193,9 @@ void kid(Pffr *pffr, FILE *pf) {
                     setedSiz = 1;
                 }
                 fgetToken(pffr, pf, str255, 255);
-                pffr.page[i].size.x = atoi(str255);
+                pffr->page[i].size.x = atoi(str255);
                 fgetToken(pffr, pf, str255, 255);
-                pffr.page[i].size.y = atoi(str255);
+                pffr->page[i].size.y = atoi(str255);
             } else if(strcmp(ope, "tob") == 0) {
                 if(setedTob) {
                     error(pffr, "error: tob operator is duplicated\n");
@@ -204,7 +203,7 @@ void kid(Pffr *pffr, FILE *pf) {
                     setedTob = 1;
                 }
                 fgetToken(pffr, pf, str255, 255);
-                pffr.page[i].objSize = atoi(str255);
+                pffr->page[i].objSize = atoi(str255);
             } else {
                 error(pffr, "error: break operator\n");
             }
@@ -213,18 +212,113 @@ void kid(Pffr *pffr, FILE *pf) {
             } else if(strcmp(key, "\n\n") == 0) {
                 break;
             } else if(strcmp(key, "\n\n") == 0) {
-                if(pffr.page[i].objSize == 0) {
+                if(pffr->page[i].objSize == 0) {
                     nextPage = 1;
-                } else if(pffr.page[i].objSize == 0) {
+                } else if(pffr->page[i].objSize == 0) {
                     error(pffr, "error: no find object\n");
                 }
             }
-            if(pffr.page[i].objSize == 0) {
+            if(pffr->page[i].objSize == 0) {
                 error(pffr, "error: no find object\n");
             }
         }
         if(nextPage) {
             continue;
+        }
+        for(int j = 0; j < pffr->page[i].objSize; j ++) {
+            fgetToken(pffr, pf, ope, 4);
+            if(strcmp(ope, "obj") != 0) {
+                error(pffr, "error: no find object\n");
+            }
+            fgetToken(pffr, pf, key, 4);
+            if(strcmp(key, "cir") == 0) {
+                pffr->page[i].obj[j].type = OBJ_TYPE_CIRCLE;
+            } else if(strcmp(key, "rec") == 0) {
+                pffr->page[i].obj[j].type = OBJ_TYPE_RECTANGLE;
+            } else {
+                error(pffr, "error: break 2nd obj operand\n");
+            }
+            fgetToken(pffr, pf, str255, 255);
+            strcpy(pffr->page[i].obj[j].name, str255);
+            fgetToken(pffr, pf, key, 4);
+            if(strcmp(key, "\n\n") != 0) {
+                error(pffr, "error: no find obj content\n");
+            }
+            if(pffr->page[i].obj[j].type == OBJ_TYPE_CIRCLE) {
+                int setedCenter = 0;
+                int setedRadius = 0;
+                while(1) {
+                    fgetToken(pffr, pf, ope, 4);
+                    if(strcmp(ope, "cnt") == 0) {
+                        if(setedCenter) {
+                            error(pffr, "error: cnt operator is duplicated\n");
+                        } else {
+                            setCenter = 1;
+                        }
+                        fgetToken(pffr, pf, str255, 255);
+                        pffr->page[i].obj[j].content.circle.center.x = strtof(str255);
+                        fgetToken(pffr, pf, str255, 255);
+                        pffr->page[i].obj[j].content.circle.center.y = strtof(str255);
+                    } else if(strcmp(ope, "rad") == 0) {
+                        if(setedRadius) {
+                            error(pffr, "error: rad operator is duplicated\n");
+                        } else {
+                            setedRadius = 1;
+                        }
+                        fgetToken(pffr, pf, str255, 255);
+                        pffr->page[i].obj[j].content.circle.radius = strtof(str255);
+                    } else {
+                        error(pffr, "error: break operator\n");
+                    }
+                    fgetToken(pffr, pf, key, 4);
+                    if(strcmp(key, "\n") == 0) {
+                    } else if(strcmp(key, "\n\n") == 0 && j != pffr->page[i].objSize - 1) {
+                        break;
+                    } else if(strcmp(key, "\n\n\n") == 0 && j == pffr->page[i].objSize - 1) {
+                        break;
+                    } else {
+                        error(pffr, "error: no find next obj\n");
+                    }
+                }
+            } else if(pffr->page[i].obj[j].type == OBJ_TYPE_RECTANGLE) {
+                int setedStart = 0;
+                int setedEnd = 0;
+                while(1) {
+                    fgetToken(pffr, pf, ope, 4);
+                    if(strcmp(ope, "sta") == 0) {
+                        if(setedCenter) {
+                            error(pffr, "error: sta operator is duplicated\n");
+                        } else {
+                            setCenter = 1;
+                        }
+                        fgetToken(pffr, pf, str255, 255);
+                        pffr->page[i].obj[j].content.rectangle.start.x = strtof(str255);
+                        fgetToken(pffr, pf, str255, 255);
+                        pffr->page[i].obj[j].content.rectangle.start.y = strtof(str255);
+                    } else if(strcmp(ope, "end") == 0) {
+                        if(setedEnd) {
+                            error(pffr, "error: end operator is duplicated\n");
+                        } else {
+                            setedEnd = 1;
+                        }
+                        fgetToken(pffr, pf, str255, 255);
+                        pffr->page[i].obj[j].content.rectangle.end.x = strtof(str255);
+                        fgetToken(pffr, pf, str255, 255);
+                        pffr->page[i].obj[j].content.rectangle.end.y = strtof(str255);
+                    } else {
+                        error(pffr, "error: break operator\n");
+                    }
+                    fgetToken(pffr, pf, key, 4);
+                    if(strcmp(key, "\n") == 0) {
+                    } else if(strcmp(key, "\n\n") == 0 && j != pffr->page[i].objSize - 1) {
+                        break;
+                    } else if(strcmp(key, "\n\n\n") == 0 && j == pffr->page[i].objSize - 1) {
+                        break;
+                    } else {
+                        error(pffr, "error: no find next obj\n");
+                    }
+                }
+            }
         }
     }
 }
